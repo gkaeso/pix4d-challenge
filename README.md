@@ -22,6 +22,11 @@ To run the project:
     python manage.py migrate
     python manage.py runserver 8080
 
+To run the Docker container:
+
+    docker build -t pix4d .
+    docker run -it -p 8000:8000 pix4d
+
 _______________
 
 
