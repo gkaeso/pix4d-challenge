@@ -27,3 +27,17 @@ class TicketViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(tickets, many=True)
 
         return Response(serializer.data)
+
+    @action(methods=['get'], detail=False)
+    def filter_by_support_user(self, request, user_name):
+        """
+        This endpoint returns all Ticket objects given an input User name.
+        The filter only works on users belonging to the support team.
+        """
+        query_set = Ticket.objects.filter(owner__username=user_name, owner__groups__name__in=['team_support'])
+        query_set = add_sorting_if_exists(request, query_set, ['created_at', 'closed_at'])
+
+        tickets = get_list_or_404(query_set)
+        serializer = self.get_serializer(tickets, many=True)
+
+        return Response(serializer.data)

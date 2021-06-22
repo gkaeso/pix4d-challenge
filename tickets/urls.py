@@ -12,4 +12,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('client/<int:client_id>', views.TicketViewSet.as_view({'get': 'filter_by_client'})),
+    path('support/<str:user_name>', views.TicketViewSet.as_view({'get': 'filter_by_support_user'})),
 ]
