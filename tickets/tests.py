@@ -101,3 +101,59 @@ class TicketTest(APITestCase):
         response = self.client.get(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_filter_by_client__not_logged_user(self):
+        user = User.objects.get(username='user')
+
+        url = reverse('tickets-client', args=[user.id])
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_filter_by_client__logged_user_is_not_support_team_or_not_sales_team(self):
+        logged_user = User.objects.get(username='user')
+        self.client.force_login(logged_user)
+
+        user = User.objects.get(username='user')
+        url = reverse('tickets-client', args=[user.id])
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_filter_by_client__logged_user_is_support_team(self):
+        logged_user = User.objects.get(username='support_user')
+        self.client.force_login(logged_user)
+
+        user = User.objects.get(username='user')
+        url = reverse('tickets-client', args=[user.id])
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_filter_by_client__logged_user_is_sales_team(self):
+        logged_user = User.objects.get(username='sales_user')
+        self.client.force_login(logged_user)
+
+        user = User.objects.get(username='user')
+        url = reverse('tickets-client', args=[user.id])
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_filter_by_client__logged_user_is_support_team_but_username_does_not_exist(self):
+        logged_user = User.objects.get(username='support_user')
+        self.client.force_login(logged_user)
+
+        url = reverse('tickets-client', args=[0])
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_filter_by_client__logged_user_is_sales_team_but_username_does_not_exist(self):
+        logged_user = User.objects.get(username='sales_user')
+        self.client.force_login(logged_user)
+
+        url = reverse('tickets-client', args=[0])
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
