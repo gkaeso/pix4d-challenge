@@ -67,7 +67,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         This endpoint returns all Ticket objects given an input User name.
         The filter only works on users belonging to the support team.
         """
-        query_set = Ticket.objects.filter(owner__username=user_name, owner__groups__name__in=['team_support'])
+        query_set = Ticket.objects.filter(owner__username=user_name, owner__groups__name__in=['team_support', 'team_sales'])
         query_set = add_sorting_if_exists(request, query_set, ['created_at', 'closed_at'])
 
         tickets = get_list_or_404(query_set)
